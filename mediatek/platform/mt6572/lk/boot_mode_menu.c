@@ -38,13 +38,14 @@ void boot_mode_menu_select()
           video_printf("[Fastboot    Mode]             \n");
 #endif
           video_printf("[Normal      Boot]             \n");
-#ifndef USER_BUILD
+//#ifndef USER_BUILD
           video_printf("[Normal      Boot +ftrace]     \n");
-#if defined(MEM_PRESERVED_MODE_ENABLE)
+//#if defined(MEM_PRESERVED_MODE_ENABLE)
           video_printf("[Normal      + mem-pre]       \n");
-#endif //#if defined(MEM_PRESERVED_MODE_ENABLE)
+//#endif //#if defined(MEM_PRESERVED_MODE_ENABLE)
           video_printf("[Normal      slub debug off]     \n");
-#endif
+//#endif
+		  video_printf("[Factory     Mode]         \n");
           while(1)
           {
              if(mtk_detect_key(MT65XX_MENU_SELECT_KEY))//VOL_UP
@@ -61,13 +62,14 @@ void boot_mode_menu_select()
                             video_printf("[Recovery    Mode]             \n");
                             video_printf("[Fastboot    Mode]         <<==\n");
                             video_printf("[Normal      Boot]             \n");
-#ifndef USER_BUILD
+//#ifndef USER_BUILD
                             video_printf("[Normal      Boot +ftrace]     \n");
-#if defined(MEM_PRESERVED_MODE_ENABLE)
+//#if defined(MEM_PRESERVED_MODE_ENABLE)
                             video_printf("[Normal      + mem-pre]       \n");
-#endif //#if defined(MEM_PRESERVED_MODE_ENABLE)
+//#endif //#if defined(MEM_PRESERVED_MODE_ENABLE)
                             video_printf("[Normal      slub debug off]     \n");
-#endif
+//#endif
+							video_printf("[Factory     Mode]         \n");
                         break;
 #endif
                         case 1:
@@ -80,51 +82,45 @@ void boot_mode_menu_select()
                             video_printf("[Fastboot    Mode]             \n");
 #endif
                             video_printf("[Normal      Boot]         <<==\n");
-#ifndef USER_BUILD
+//#ifndef USER_BUILD
                             video_printf("[Normal      Boot +ftrace]     \n");
-#if defined(MEM_PRESERVED_MODE_ENABLE)
+//#if defined(MEM_PRESERVED_MODE_ENABLE)
                             video_printf("[Normal      + mem-pre]       \n");
-#endif //#if defined(MEM_PRESERVED_MODE_ENABLE)
+//#endif //#if defined(MEM_PRESERVED_MODE_ENABLE)
                             video_printf("[Normal      slub debug off]     \n");
-#endif
+//#endif
+							video_printf("[Factory     Mode]         \n");
                         break;
 
                         case 2:
-#ifdef USER_BUILD
-                            select = 0;
-#else
+
                             select = 3;
-#endif
+
 
                             video_set_cursor(video_get_rows()/2, 0);
                             video_printf(title_msg);
-#ifdef USER_BUILD
-                            video_printf("[Recovery    Mode]         <<==\n");
-#ifdef MTK_FASTBOOT_SUPPORT
-                            video_printf("[Fastboot    Mode]             \n");
-#endif
-                            video_printf("[Normal      Boot]             \n");
-#else
+
                             video_printf("[Recovery    Mode]             \n");
 #ifdef MTK_FASTBOOT_SUPPORT
                             video_printf("[Fastboot    Mode]             \n");
 #endif
                             video_printf("[Normal      Boot]             \n");
                             video_printf("[Normal      Boot +ftrace] <<==\n");
-#if defined(MEM_PRESERVED_MODE_ENABLE)
+//#if defined(MEM_PRESERVED_MODE_ENABLE)
                             video_printf("[Normal      + mem-pre]       \n");
-#endif //#if defined(MEM_PRESERVED_MODE_ENABLE)
+//#endif //#if defined(MEM_PRESERVED_MODE_ENABLE)
                             video_printf("[Normal      slub debug off]     \n");
-#endif
+//#endif
+							video_printf("[Factory     Mode]         \n");
                         break;
 
-#ifndef USER_BUILD
+//#ifndef USER_BUILD
                         case 3:
-#if defined(MEM_PRESERVED_MODE_ENABLE)
+//#if defined(MEM_PRESERVED_MODE_ENABLE)
                             select = 4;
-#else
-                            select = 5;
-#endif
+//#else
+                            //select = 5;
+//#endif
                             video_set_cursor(video_get_rows()/2, 0);
                             video_printf(title_msg);
                             video_printf("[Recovery    Mode]             \n");
@@ -133,15 +129,16 @@ void boot_mode_menu_select()
 #endif
                             video_printf("[Normal      Boot]             \n");
                             video_printf("[Normal      Boot +ftrace]     \n");
-#if defined(MEM_PRESERVED_MODE_ENABLE)
+//#if defined(MEM_PRESERVED_MODE_ENABLE)
                             video_printf("[Normal      + mem-pre]   <<==\n");
-                            video_printf("[Normal      slub debug off]     \n");
-#else
-                            video_printf("[Normal      slub debug off] <<==\n");
-#endif //#if defined(MEM_PRESERVED_MODE_ENABLE)
+                            //video_printf("[Normal      slub debug off]     \n");
+//#else
+                            video_printf("[Normal      slub debug off]  \n");
+//#endif //#if defined(MEM_PRESERVED_MODE_ENABLE)
+							video_printf("[Factory     Mode]         \n");
                         break;
 
-#if defined(MEM_PRESERVED_MODE_ENABLE)
+//#if defined(MEM_PRESERVED_MODE_ENABLE)
                         case 4:
                             select = 5;
                             video_set_cursor(video_get_rows()/2, 0);
@@ -154,10 +151,29 @@ void boot_mode_menu_select()
                             video_printf("[Normal      Boot +ftrace]     \n");
                             video_printf("[Normal      + mem-pre]       \n");
                             video_printf("[Normal      slub debug off] <<==\n");
+							video_printf("[Factory     Mode]         \n");
                         break;
-#endif  //#if defined(MEM_PRESERVED_MODE_ENABLE)
-
+//#endif  //#if defined(MEM_PRESERVED_MODE_ENABLE)
+						
                         case 5:
+                            select = 6;
+                            video_set_cursor(video_get_rows()/2, 0);
+                            video_printf(title_msg);
+                            video_printf("[Recovery    Mode]         \n");
+#ifdef MTK_FASTBOOT_SUPPORT
+                            video_printf("[Fastboot    Mode]             \n");
+#endif
+                            video_printf("[Normal      Boot]             \n");
+                            video_printf("[Normal      Boot +ftrace]     \n");
+//#if defined(MEM_PRESERVED_MODE_ENABLE)
+                            video_printf("[Normal      + mem-pre]       \n");
+//#endif
+                            video_printf("[Normal      slub debug off]     \n"); 
+							video_printf("[Factory     Mode]         <<==\n");                           
+                        break;
+
+						case 6:
+							video_clean_screen();
                             select = 0;
                             video_set_cursor(video_get_rows()/2, 0);
                             video_printf(title_msg);
@@ -167,13 +183,14 @@ void boot_mode_menu_select()
 #endif
                             video_printf("[Normal      Boot]             \n");
                             video_printf("[Normal      Boot +ftrace]     \n");
-#if defined(MEM_PRESERVED_MODE_ENABLE)
+//#if defined(MEM_PRESERVED_MODE_ENABLE)
                             video_printf("[Normal      + mem-pre]       \n");
-#endif
-                            video_printf("[Normal      slub debug off]     \n");                            
+//#endif
+                            video_printf("[Normal      slub debug off]     \n"); 
+							video_printf("[Factory     Mode]         \n");                           
                         break;
-#endif  //#ifndef USER_BUILD
-
+//#endif  //#ifndef USER_BUILD
+							
                         default:
                         break;
                     }
@@ -193,19 +210,23 @@ void boot_mode_menu_select()
           if(select == 0)
           {
                g_boot_mode = RECOVERY_BOOT;
+				video_clean_screen();
           }
           else if(select == 1)
           {
                 g_boot_mode = FASTBOOT;
+				video_clean_screen();
           }
           else if(select == 2)
           {
                 g_boot_mode = NORMAL_BOOT;
+				video_clean_screen();
           }
           else if(select == 3)
           {
                 sprintf(g_CMDLINE, "%s trace_buf_size=11m boot_time_ftrace", g_CMDLINE);
                 g_boot_mode = NORMAL_BOOT;
+				video_clean_screen();
           }
 #if defined(MEM_PRESERVED_MODE_ENABLE)
           else if(select == 4)
@@ -214,12 +235,20 @@ void boot_mode_menu_select()
                 //enable mem-preserved mode.
                 platform_mem_preserved_config(1);
                 g_boot_mode = NORMAL_BOOT;
+				video_clean_screen();
           }
 #endif //#if defined(MEM_PRESERVED_MODE_ENABLE)
           else if (select == 5)
           {
                 sprintf(g_CMDLINE, "%s slub_debug=-", g_CMDLINE);
                 g_boot_mode = NORMAL_BOOT;
+				video_clean_screen();
+          }
+		  else if (select == 6)
+          {
+                sprintf(g_CMDLINE, "%s slub_debug=-", g_CMDLINE);
+                g_boot_mode = FACTORY_BOOT;
+				video_clean_screen();
           }
           else{
                 //pass

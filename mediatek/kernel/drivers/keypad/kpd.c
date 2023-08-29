@@ -302,27 +302,51 @@ static enum hrtimer_restart aee_timer_5s_func(struct hrtimer *timer) {
 #endif
 
 /************************************************************************************************************************************************/
+extern unsigned int Cust_SetBacklight_RY(int level, int div);
 
 #if KPD_HAS_SLIDE_QWERTY
 static void kpd_slide_handler(unsigned long data)
 {
 	bool slid;
 	u8 old_state = kpd_slide_state;
-
+	printk("&&&&&&&&& kpd_slide_handler,old_state=%d\n",old_state);
 	kpd_slide_state = !kpd_slide_state;
-	slid = (kpd_slide_state == !!KPD_SLIDE_POLARITY);
+//	slid = (kpd_slide_state == !!KPD_SLIDE_POLARITY);
+	if(kpd_slide_state == 1)
+	{
+		slid = 1; //open
+	}
+	else
+	{
+		slid = 0; //close
+	}
 	/* for SW_LID, 1: lid open => slid, 0: lid shut => closed */
 	input_report_switch(kpd_input_dev, SW_LID, slid);
 	input_sync(kpd_input_dev);
 	kpd_print("report QWERTY = %s\n", slid ? "slid" : "closed");
 
+/*	if (FACTORY_BOOT == get_boot_mode())
+	{
+
+		if(slid == 1)
+		{
+			Cust_SetBacklight_RY(255,0);
+			printk("#####slide\n");
+		}else
+		{
+		   Cust_SetBacklight_RY(0,0);
+			printk("#####close\n");
+
+		}
+	}	
+*/
 	if(old_state) {
 		mt_set_gpio_pull_select(GPIO_QWERTYSLIDE_EINT_PIN, 0);
 	} else {
 		mt_set_gpio_pull_select(GPIO_QWERTYSLIDE_EINT_PIN, 1);
 	}
-	/* for detecting the return to old_state */
-	mt65xx_eint_set_polarity(KPD_SLIDE_EINT, old_state);
+	/*for detecting the return to old_state */
+	 mt65xx_eint_set_polarity(KPD_SLIDE_EINT, old_state);
 	mt65xx_eint_unmask(KPD_SLIDE_EINT);
 }
 
@@ -742,7 +766,68 @@ static struct miscdevice kpd_dev = {
 
 static int kpd_open(struct input_dev *dev)
 {
+	#if KPD_HAS_SLIDE_QWERTY
+			bool evdev_flag=false;
+			bool power_op=false;
+			struct input_handler *handler;
+			struct input_handle *handle;
+	
+			handle = rcu_dereference(dev->grab);
+			if (handle)
+			{
+				handler = handle->handler;
+				if(strcmp(handler->name, "evdev")==0) 
+				{
+					return -1;
+				}	
+			}
+			else 
+			{	
+				list_for_each_entry_rcu(handle, &dev->h_list, d_node) {
+					handler = handle->handler;
+					if(strcmp(handler->name, "evdev")==0) 
+					{
+						evdev_flag=true;
+						break;
+					}
+				}
+				if(evdev_flag==false)
+				{
+	
+					return -1;	
+				}	
+			}
+			
+			printk("kpd_open &&&&&&&&&&&& \n");
+		// set INT mode
+		mt_set_gpio_mode(GPIO_QWERTYSLIDE_EINT_PIN, GPIO_QWERTYSLIDE_EINT_PIN_M_EINT);
+		mt_set_gpio_dir(GPIO_QWERTYSLIDE_EINT_PIN, GPIO_DIR_IN);
+		mt_set_gpio_pull_enable(GPIO_QWERTYSLIDE_EINT_PIN, GPIO_PULL_DISABLE);
+		
+		//	power_op = powerOn_slidePin_interface();
+	
+		//	mt_eint_set_hw_debounce(KPD_SLIDE_EINT, CUST_EINT_KPD_SLIDE_DEBOUNCE_EN);
+		//	mt_eint_registration(KPD_SLIDE_EINT, CUST_EINT_KPD_SLIDE_TYPE, kpd_slide_eint_handler, 0);
+	
+		//	mt_eint_unmask(KPD_SLIDE_EINT);
+			
+			
+		mt65xx_eint_set_sens(KPD_SLIDE_EINT, KPD_SLIDE_SENSITIVE);
+	     mt65xx_eint_set_hw_debounce(KPD_SLIDE_EINT, KPD_SLIDE_DEBOUNCE);
+	     mt65xx_eint_registration(KPD_SLIDE_EINT, true, KPD_SLIDE_POLARITY,
+	                         kpd_slide_eint_handler, false);
+	
+#if 0								 
+			power_op = powerOff_slidePin_interface();
+			if(!power_op) {
+				printk(KPD_SAY "Qwerty slide pin interface power off fail\n");
+			} else {
+				kpd_print("Qwerty slide pin interface power off success\n");
+			}
+#endif
+#else
 	kpd_slide_qwerty_init();//API 1 for kpd slide qwerty init settings	
+#endif
 	return 0;
 }
 

@@ -15,6 +15,9 @@ static char *env_get_addr(int index);
 static int envmatch (uchar *s1, int i2);
 static int write_env_area(char *env_buf);
 static int read_env_area(char *env_buf);
+extern int mboot_common_get_logo_flag();
+
+
 
 void env_init(void)
 {
@@ -258,6 +261,108 @@ static int write_env_area(char *env_buf)
 	return 0;
 
 }
+
+
+int mboot_common_get_logo_flag()
+{
+  long len;
+#ifdef MTK_EMMC_SUPPORT
+  unsigned long long start_addr;
+  unsigned long long length;
+#else
+  unsigned long start_addr;
+  unsigned long length;
+#endif    
+
+  part_t *part;
+  part_dev_t *dev;
+  char part_name[]="PRO_INFO";
+  length=4096;
+  printf("[JVX] Read logo flag from pro_info\n");
+  dev = mt_part_get_device();
+  if (!dev)
+  {
+   return -ENODEV;
+  }
+  printf("[JVM]Read PRO_INFO 1\n");
+  part=mt_part_get_partition(part_name);
+  if (!part)
+  {
+   return -ENOENT;
+  }
+  printf("[JVM] Read PRO_INFO 1\n");
+  printf("[JXM] Part info name:%s\n",part->name);
+  printf("[JVM] Part info startblk:%ld\n",part->startblk);
+  printf("[JVM] Part info part blks: %ld\n",part->blknum);
+#ifdef MTK_EMMC_SUPPORT
+  start_addr =(u64)(part->statblk)*BLK_SIZE;
+  length =(u64) part->blknum*BLK_SIZE;
+#else
+  start_addr =part->startblk*BLK_SIZE;
+  length =part->blknum*BLK_SIZE;
+  
+#endif
+  printf("[JVM]Read PRO_INFO 3\n");
+
+
+  printf("[JVM]Read the data of %s\n",part_name);
+  unsigned char*addr;
+  length=10;//4096
+  unsigned char i=0;
+  addr =(unsigned char*)malloc(length*sizeof(unsigned char));
+  if (!addr)
+  {
+    printf("malloc error\r\n");
+  }
+  	
+  /*for(i=0;i++;i<128)
+  {
+	*(addr+i)=i;
+  }
+
+  // printf("[JVM]The last number0:%d\n",*(addr+10));
+  
+   for(int j=0;j<10;j++)
+   {
+	   printf("[JVM]resul0t:i:%d---%d--\n",j+1,*(addr+j));
+	
+   }
+
+
+   len=dev->write(dev,(uchar*)addr,start_addr,length);
+  if (len<0)
+  {
+   len=-EIO;
+   goto exit;
+  
+  }*/
+  memset(addr,0,length*sizeof(unsigned char));
+  len=dev->read(dev,start_addr,(uchar*)addr,length);
+  if (len<0)
+  {
+   len=-EIO;
+   goto exit;
+  
+  }
+ 
+  printf("[JVM]The last number:%d\n",*(addr+9));
+  
+  for(int j=0;j<10;j++)
+  {
+   printf("[JVM]result:i:%d---%d--\n",j+1,*(addr+j));
+   //addr++;
+  }
+exit:
+   //if(addr)
+   //	free(addr);
+   
+  return *(addr);
+}
+
+
+
+
+
 
 static int read_env_area(char *env_buf)
 {

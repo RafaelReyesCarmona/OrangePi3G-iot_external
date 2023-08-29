@@ -45,6 +45,16 @@
 #include <show_animation_common.h>
 
 
+//wangjicheng start
+#define BOOT_LOGO2_INDEX   45 
+#define BOOT_LOGO3_INDEX   46 
+#define BOOT_LOGO4_INDEX   47 
+#define BOOT_LOGO5_INDEX   48 
+#define BOOT_LOGO6_INDEX   49 
+#define BOOT_LOGO7_INDEX   50 
+//wangjicheng end
+
+
 LCM_SCREEN_T phical_screen;
 void  *logo_addr = NULL;
 
@@ -158,9 +168,10 @@ void mt_logo_get_custom_if(void)
  */
 void mt_disp_show_boot_logo(void)
 {
-    dprintf(INFO, "[lk logo: %s %d]\n",__FUNCTION__,__LINE__);    
+    dprintf(INFO, "[lk logo: %s %d]\n",__FUNCTION__,__LINE__);   
+	int changelogo=0; 
     mt_logo_get_custom_if();
-
+	changelogo=mboot_common_get_logo_flag();
     if(logo_cust_if->show_boot_logo)
     {
         logo_cust_if->show_boot_logo();
@@ -169,7 +180,41 @@ void mt_disp_show_boot_logo(void)
     {
         ///show_logo(0);
         init_fb_screen();
-        fill_animation_logo(BOOT_LOGO_INDEX, mt_get_fb_addr(), (void *)mt_get_tempfb_addr(), logo_addr, phical_screen);
+//wangjicheng start
+        //fill_animation_logo(BOOT_LOGO_INDEX, mt_get_fb_addr(), mt_get_tempfb_addr(), logo_addr, phical_screen);
+if(changelogo == 0||changelogo == 1||changelogo == 255)
+{
+    fill_animation_logo(BOOT_LOGO_INDEX, mt_get_fb_addr(), mt_get_tempfb_addr(), logo_addr, phical_screen);
+}
+else if(changelogo == 2)
+{
+    fill_animation_logo(BOOT_LOGO_INDEX, mt_get_fb_addr(), mt_get_tempfb_addr(), logo_addr, phical_screen);
+}
+else if(changelogo== 3)
+{
+    fill_animation_logo(BOOT_LOGO_INDEX, mt_get_fb_addr(), mt_get_tempfb_addr(), logo_addr, phical_screen);
+}
+else if(changelogo== 4)
+{
+    fill_animation_logo(BOOT_LOGO_INDEX, mt_get_fb_addr(), mt_get_tempfb_addr(), logo_addr, phical_screen);
+}
+else if(changelogo == 5)
+{
+    fill_animation_logo(BOOT_LOGO_INDEX, mt_get_fb_addr(), mt_get_tempfb_addr(), logo_addr, phical_screen);
+}
+else if(changelogo == 6)
+{
+    fill_animation_logo(BOOT_LOGO_INDEX, mt_get_fb_addr(), mt_get_tempfb_addr(), logo_addr, phical_screen);
+}
+else if(changelogo == 7)
+{
+    fill_animation_logo(BOOT_LOGO_INDEX, mt_get_fb_addr(), mt_get_tempfb_addr(), logo_addr, phical_screen);
+}
+else
+{
+    fill_animation_logo(BOOT_LOGO_INDEX, mt_get_fb_addr(), mt_get_tempfb_addr(), logo_addr, phical_screen);
+}
+//wangjicheng end
         mt_disp_update(0, 0, CFG_DISPLAY_WIDTH, CFG_DISPLAY_HEIGHT);
     }
 
